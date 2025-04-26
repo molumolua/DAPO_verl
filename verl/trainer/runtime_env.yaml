@@ -1,0 +1,9 @@
+working_dir: ./
+excludes: ["/.git/","**/*.safetensors","**/*.parquet"]
+env_vars:
+  TORCH_NCCL_AVOID_RECORD_STREAMS: "1"
+  HF_ENDPOINT: "https://hf-mirror.com"        # 不要在最后带 “/”
+  HUGGINGFACE_HUB_BASE_URL: "https://hf-mirror.com"   # 兼容新版本
+  HF_DATASETS_CACHE: "/data2/huggingface_cache"  
+  RAY_TMPDIR: "/data2/xucaijun/raytmp"
+  HYDRA_FULL_ERROR: "1"  # 显示完整的错误信息
