@@ -10,7 +10,7 @@ export TRANSFORMERS_CACHE=$XDG_CACHE_HOME/transformers
 export CUDA_VISIBLE_DEVICES=0,1,2,3
 export WANDB_API_KEY=2b19883751ef6d7a62e6eafcc80c91bbb4ceb61b
 
-project_name='DAPO-verl'
+project_name='Math-Generator-DAPO-verl'
 exp_name='Think-MATH-DAPO-Qwen2.5-7B'
 
 adv_estimator=grpo
@@ -24,7 +24,7 @@ clip_ratio_low=0.2
 clip_ratio_high=0.28
 
 max_prompt_length=$((1024 ))
-max_response_length=$((1024 * 7))
+max_response_length=$((1024 * 16))
 enable_overlong_buffer=True
 overlong_buffer_len=$((1024))
 overlong_penalty_factor=1.0
@@ -35,7 +35,7 @@ enable_filter_groups=True
 filter_groups_metric=acc
 max_num_gen_batches=10
 train_prompt_bsz=16
-gen_prompt_bsz=$((train_prompt_bsz * 2))
+gen_prompt_bsz=$((train_prompt_bsz * 3))
 n_resp_per_prompt=16  #采样次数
 train_prompt_mini_bsz=16
 
@@ -138,5 +138,8 @@ PYTHONUNBUFFERED=1 python3 -m recipe.dapo.src.main_dapo \
     trainer.save_freq=100 \
     trainer.total_epochs=1 \
     trainer.default_local_dir="${CKPTS_DIR}" \
-    trainer.resume_mode=auto
+    trainer.resume_mode=auto \
+    reward_model.enable=True \
+    reward_model.strategy="fsdp" \
+    
 

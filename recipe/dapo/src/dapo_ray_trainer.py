@@ -125,21 +125,22 @@ class RayDAPOTrainer(RayPPOTrainer):
                         # compute scores. Support both model and function-based.
                         # We first compute the scores using reward model. Then, we call reward_fn to combine
                         # the results from reward model and rule-based results.
-                        if self.use_rm:
-                            # we first compute reward model score
-                            reward_tensor = self.rm_wg.compute_rm_score(new_batch)
-                            new_batch = new_batch.union(reward_tensor)
-
+                        
                         # we combine with rule-based rm
                         reward_extra_infos_dict: dict[str, list]
-                        try:
-                            reward_result = self.reward_fn(new_batch, return_dict=True)
-                            reward_tensor = reward_result['reward_tensor']
-                            reward_extra_infos_dict = reward_result['reward_extra_info']
-                        except Exception as e:
-                            print(f'Error in reward_fn: {e}')
-                            reward_tensor = self.reward_fn(new_batch)
-                            reward_extra_infos_dict = {}
+                        if self.use_rm:
+                            # reward model score get adn 
+                            reward_tensor = self.rm_wg.compute_rm_score(new_batch)
+                            new_batch = new_batch.union(reward_tensor)
+                        else:
+                            try:
+                                reward_result = self.reward_fn(new_batch, return_dict=True)
+                                reward_tensor = reward_result['reward_tensor']
+                                reward_extra_infos_dict = reward_result['reward_extra_info']
+                            except Exception as e:
+                                print(f'Error in reward_fn: {e}')
+                                reward_tensor = self.reward_fn(new_batch)
+                                reward_extra_infos_dict = {}
 
                         new_batch.batch['token_level_scores'] = reward_tensor
 

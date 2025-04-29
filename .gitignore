@@ -8,6 +8,9 @@
 **/*.tar.gz
 **/playground
 **/wandb
+**/data
+**/ckpts
+**/tmp*/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

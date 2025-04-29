@@ -2,19 +2,27 @@ from datasets import load_dataset
 import os
 os.environ["HF_ENDPOINT"] = "https://hf-mirror.com"
 import pandas as pd
-from verl.utils.reward_score.math import *
-from verl.utils.reward_score.math_dapo import normalize_final_answer
+# from verl.utils.reward_score.math import *
+# from verl.utils.reward_score.math_dapo import normalize_final_answer
 import json
 def load_json(path):
     with open (path, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
+def load_jsonl(file):
+    with open(file, "r", encoding="utf-8") as f:
+        for line in f:
+            try:
+                yield json.loads(line)
+            except:
+                print("Error in loading:", line)
+                exit()
 def extract_answer(solution,extract_type="TEST"):
     # verl/verl/utils/reward_score/__init__.py
     answer=""
     if extract_type == "think":
         return {
-            "ground_truth": solution# use raw solution and extract answer later in reward model
+            "ground_truth": solution # use raw solution and extract answer later in reward model
         }
    
     string_in_last_boxed = last_boxed_only_string(solution)
@@ -54,23 +62,43 @@ def prepare_question(question,prompt_type="TEST"):
     return prompt_list
 
 if __name__ == "__main__":
-    data_source = "think"
+    process_type = "think"
+    data_source="think"
     # 加载数据集的 train 部分
-    dataset = load_dataset("DigitalLearningGmbH/MATH-lighteval", split="train")
-    save_path = f"/data2/xucaijun/verl/data/{data_source}_MATH-lighteval_train-processed.parquet"
-    # dataset = load_dataset("HuggingFaceH4/MATH-500",split="test")
-    # save_path = f"/data2/xucaijun/verl/data/{data_source}_MATH-500-processed.parquet"
-    # dataset = load_json("/data2/xucaijun/My-Math-Generator/outputs/7b_rejected_first_filter_1-4.json")
-    # save_path = f"/data2/xucaijun/verl/data/{data_source}_7b_rejected_first_filter_1-4.parquet"
-    processed_data = []
+    # MATH
+    # dataset = load_dataset("/home/xiaochangyi/cache/datasets/math-lighteval", split="train",cache_dir="/data/xiaochangyi/hf_datasets_cache")
+    # save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_MATH-lighteval_train-processed.parquet"
+    
+    # math-500
+    # dataset = load_dataset("/home/xiaochangyi/cache/datasets/math-500",split="test")
+    # save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_MATH-500-processed.parquet"
+    # data_source="think_math-500"
 
+    # train data
+    # dataset = load_json("/data/xiaochangyi/New-Math-Generator/outputs/R1_7b_rejected_first-filter-1-3.json")
+    # save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_R1_7b_rejected_first-filter-1-3.parquet"
+
+    #aime24
+    dataset = list(load_jsonl("/data/xiaochangyi/test.jsonl"))
+    save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_aime24_test.parquet"
+    data_source="think_aime24"
+    dataset = [
+        {
+            "problem": item["problem"],
+            "solution": f"\\boxed{{{item["answer"]}}}"
+        }
+        for item in dataset
+    ]
+
+    # 正式处理
+    processed_data = []
     for i,item in enumerate(dataset):
         question = item['problem']  # Extract the problem
         solution = item['solution']  # Extract the solution
         
         # Generate the prompt and answer
-        prompt = prepare_question(question,prompt_type=data_source)
-        answer = extract_answer(solution,extract_type=data_source)
+        prompt = prepare_question(question,prompt_type=process_type)
+        answer = extract_answer(solution,extract_type=process_type)
         if i ==0 :
             print(f"Prompt: {prompt}")
             print(f"Answer: {answer}")

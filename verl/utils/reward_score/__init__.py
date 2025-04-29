@@ -18,7 +18,7 @@ def _default_compute_score(data_source, solution_str, ground_truth, extra_info=N
     if data_source == 'openai/gsm8k':
         from . import gsm8k
         res = gsm8k.compute_score(solution_str, ground_truth)
-    elif data_source == 'think':
+    elif data_source == 'think' or data_source == 'think_aime24' or data_source == 'think_math-500':
         from . import think_test_math
         res = think_test_math.compute_score(solution_str, ground_truth)
     elif data_source == "TEST":
