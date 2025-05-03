@@ -75,20 +75,20 @@ if __name__ == "__main__":
     # data_source="think_math-500"
 
     # train data
-    # dataset = load_json("/data/xiaochangyi/New-Math-Generator/outputs/R1_7b_rejected_first-filter-1-3.json")
-    # save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_R1_7b_rejected_first-filter-1-3.parquet"
+    dataset = load_json("/data/xiaochangyi/New-Math-Generator/outputs/R1-7b-1-3-repeat-100.json")
+    save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_R1-7b-1-3-repeat-100.parquet"
 
-    #aime24
-    dataset = list(load_jsonl("/data/xiaochangyi/test.jsonl"))
-    save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_aime24_test.parquet"
-    data_source="think_aime24"
-    dataset = [
-        {
-            "problem": item["problem"],
-            "solution": f"\\boxed{{{item["answer"]}}}"
-        }
-        for item in dataset
-    ]
+    # #aime24
+    # dataset = list(load_jsonl("/data/xiaochangyi/test.jsonl"))
+    # save_path = f"/data/xiaochangyi/DAPO_verl/data/{data_source}_aime24_test.parquet"
+    # data_source="think_aime24"
+    # dataset = [
+    #     {
+    #         "problem": item["problem"],
+    #         "solution": f"\\boxed{{{item["answer"]}}}"
+    #     }
+    #     for item in dataset
+    # ]
 
     # 正式处理
     processed_data = []

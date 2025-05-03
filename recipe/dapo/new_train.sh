@@ -11,7 +11,7 @@ export CUDA_VISIBLE_DEVICES=0,1,2,3
 export WANDB_API_KEY=2b19883751ef6d7a62e6eafcc80c91bbb4ceb61b
 
 project_name='DAPO-verl'
-exp_name='Think-MATH-DAPO-Qwen2.5-7B'
+exp_name='Think-MATH-DAPO-R1-1.5B'
 
 adv_estimator=grpo
 
@@ -45,10 +45,10 @@ train_prompt_mini_bsz=32
 # RUNTIME_ENV=${RUNTIME_ENV:-"${WORKING_DIR}/verl/trainer/runtime_env.yaml"}
 # Paths
 RAY_DATA_HOME=${RAY_DATA_HOME:-"/data/xiaochangyi/DAPO_verl"}
-MODEL_PATH=${MODEL_PATH:-"/data/xiaochangyi/Qwen2.5-7B"}
+MODEL_PATH=${MODEL_PATH:-"/data/modelscope/DeepSeek-R1-Distill-Qwen-1.5B"}
 CKPTS_DIR=${CKPTS_DIR:-"${RAY_DATA_HOME}/ckpts/${project_name}/${exp_name}"}
 TRAIN_FILE=${TRAIN_FILE:-"/data/xiaochangyi/DAPO_verl/data/think_R1-7b-1-3-repeat-100.parquet"}
-TEST_FILE=${TEST_FILE:-"/data/xiaochangyi/DAPO_verl/data/think_MATH-500-processed.parquet"}
+TEST_FILE=${TEST_FILE:-"/data/xiaochangyi/DAPO_verl/data/think_aime24_test.parquet"}
 
 # Algorithm
 temperature=1.0
@@ -120,7 +120,7 @@ PYTHONUNBUFFERED=1 python3 -m recipe.dapo.src.main_dapo \
     actor_rollout_ref.rollout.val_kwargs.top_p=${val_top_p} \
     actor_rollout_ref.rollout.val_kwargs.top_k=${top_k} \
     actor_rollout_ref.rollout.val_kwargs.do_sample=True \
-    actor_rollout_ref.rollout.val_kwargs.n=1 \
+    actor_rollout_ref.rollout.val_kwargs.n=16 \
     actor_rollout_ref.ref.fsdp_config.param_offload=${offload} \
     actor_rollout_ref.ref.ulysses_sequence_parallel_size=${sp_size} \
     actor_rollout_ref.actor.fsdp_config.fsdp_size=-1 \
@@ -139,5 +139,7 @@ PYTHONUNBUFFERED=1 python3 -m recipe.dapo.src.main_dapo \
     trainer.max_actor_ckpt_to_keep=1 \
     trainer.total_epochs=1 \
     trainer.default_local_dir="${CKPTS_DIR}" \
-    trainer.resume_mode=auto
+    trainer.resume_mode=auto \
+    +trainer.val_only=True
+    
 
